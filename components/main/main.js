@@ -6,6 +6,8 @@ import {
   Slider
 } from 'react-native';
 
+import Nav from "./nav";
+
 export default class Main extends Component {
   constructor(props) {
     super(props);
@@ -96,45 +98,48 @@ export default class Main extends Component {
     const { directionDisplay, touchStart } = this.state;
 
     return (
-      <View 
-        style={styles.container}
-        onStartShouldSetResponder={evt => true}
-        onMoveShouldSetResponder={evt => true}
-        onResponderGrant={this.detectStart}
-        onResponderReject={this.handleTouchError}
-        onResponderMove={this.handleSwipeMove}
-        onResponderRelease={this.handleSwipeFinish}
-        >
-
-        <Text 
-          style={styles.leftInstruction}>
-          Swipe left and start speaking!
-        </Text>
-        <View style={testStyles.touchIndicator}>
-          <Text style={testStyles.touchResponse}>
-            {this.state.touchResponse}
-          </Text>
-        </View>
-        <Text
-          style={styles.rightInstruction}>
-          Swipe right and start typing!
-        </Text>
-
-
-        {/* --------Direction indicator---------- */}
+      <View
+        style={styles.container}>
         <View 
-          style={{
-            position: "absolute",
-            display: directionDisplay,
-            width: 50,
-            height: 50,
-            left: touchStart.x - 25,
-            top: touchStart.y - 25,
-            borderRadius: 50,
-            borderWidth: 1,
-            borderColor: "black",
-          }}>
+          style={styles.swipeArea}
+          onStartShouldSetResponder={evt => true}
+          onMoveShouldSetResponder={evt => true}
+          onResponderGrant={this.detectStart}
+          onResponderReject={this.handleTouchError}
+          onResponderMove={this.handleSwipeMove}
+          onResponderRelease={this.handleSwipeFinish}>
+
+          <Text 
+            style={styles.leftInstruction}>
+            Swipe left and start speaking!
+          </Text>
+          <View style={testStyles.touchIndicator}>
+            <Text style={testStyles.touchResponse}>
+              {this.state.touchResponse}
+            </Text>
+          </View>
+          <Text
+            style={styles.rightInstruction}>
+            Swipe right and start typing!
+          </Text>
+
+
+          {/* --------Direction indicator---------- */}
+          <View 
+            style={{
+              position: "absolute",
+              display: directionDisplay,
+              width: 50,
+              height: 50,
+              left: touchStart.x - 25,
+              top: touchStart.y - 25,
+              borderRadius: 50,
+              borderWidth: 1,
+              borderColor: "black",
+            }}>
+          </View>
         </View>
+        <Nav/>
       </View>
     );
   }
@@ -142,10 +147,22 @@ export default class Main extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    padding: 0,
+    borderWidth: 1,
+    borderColor: "black",
+    height: "100%",
+  },
+  swipeArea: {
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    width: "100%",
+    height: "90%",
   },
   leftInstruction: {
     paddingRight: "20%",
