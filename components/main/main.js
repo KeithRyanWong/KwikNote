@@ -13,54 +13,88 @@ export default class Main extends Component {
     this.state = {
       mode: "",
       touchStart: [],
+      x: 0,
+      y: 0,
+      left: -100,
+      top: -100,
       touchDirection: [],
       touchResponse: "Waiting",
 
-      directionDisplay: "Hidden",
+      directionDisplay: "none",
     };
 
     this.detectStart = this.detectStart.bind(this);
     this.handleTouchError = this.handleTouchError.bind(this);
-    this.handleSwipe = this.handleSwipe.bind(this);
-    this.handleSwipeRight = this.handleSwipeRight.bind(this);
-    this.handleSwipeLeft = this.handleSwipeLeft.bind(this);
+    this.handleSwipeMove = this.handleSwipeMove.bind(this);
+    this.handleSwipeFinish = this.handleSwipeFinish.bind(this);
   }
 
-  detectStart(evt) {
+  detectStart({ nativeEvent }) {
     this.showStart();
 
+    const x = nativeEvent.pageX;
+    const y = nativeEvent.pageY;
+
     const location = { 
-      x: evt.nativeEvent.locationX,
-      y: evt.nativeEvent.locationY
+      x,
+      y,
     };
 
     this.setState({
       touchResponse: `Touch started at ${location.x}, ${location.y}`,
       touchStart: location,
+      directionDisplay: "flex",
+      x,
+      y,
     });
   }
+  
+  showStart() {
+
+  }
+
   handleTouchError(evt) {
     this.setState({
       touchResponse: "Something went wrong"
     });
   }
 
-  handleSwipe(evt) {
-    evt.nativeEvent.locationX
+  handleSwipeMove({ nativeEvent }) {
+    const x = nativeEvent.pageX;
+    const y = nativeEvent.pageY;
     this.setState({
-      touchResponse: "I moved!"
+      x,
+      y
     });
   }
 
-  handleSwipeRight(evt) {
+  handleSwipeFinish({ nativeEvent }) {
+    const x = nativeEvent.pageX;
+    const y = nativeEvent.pageY;
+    let touchResponse;
+    let { touchStart } = this.state;
 
-  }
-  handleSwipeLeft(evt) {
+    if(x < touchStart.x - 25) {
+      touchResponse = "Swiped left!";
+      // this.openVoiceRecorder();
+    } else if (x > touchStart.x + 25) {
+      touchResponse = "Swiped right!";
+      // this.openTextEditor();
+    } else {
+      touchResponse = "Cancelled!";
+    }
 
-  }
+    this.setState({
+      directionDisplay: "none",
+      x,
+      y,
+      touchResponse,
+    });
+  } 
 
   render() {
-    
+    const { directionDisplay, touchStart } = this.state;
+
     return (
       <View 
         style={styles.container}
@@ -68,8 +102,10 @@ export default class Main extends Component {
         onMoveShouldSetResponder={evt => true}
         onResponderGrant={this.detectStart}
         onResponderReject={this.handleTouchError}
-        onResponderMove={this.handleSwipe}
+        onResponderMove={this.handleSwipeMove}
+        onResponderRelease={this.handleSwipeFinish}
         >
+
         <Text 
           style={styles.leftInstruction}>
           Swipe left and start speaking!
@@ -83,9 +119,20 @@ export default class Main extends Component {
           style={styles.rightInstruction}>
           Swipe right and start typing!
         </Text>
+
+
+        {/* --------Direction indicator---------- */}
         <View 
           style={{
-
+            position: "absolute",
+            display: directionDisplay,
+            width: 50,
+            height: 50,
+            left: touchStart.x - 25,
+            top: touchStart.y - 25,
+            borderRadius: 50,
+            borderWidth: 1,
+            borderColor: "black",
           }}>
         </View>
       </View>
