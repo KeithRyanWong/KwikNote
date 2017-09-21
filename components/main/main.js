@@ -20,7 +20,7 @@ export default class Main extends Component {
       y: 0,
       left: -100,
       top: -100,
-      touchDirection: [],
+      touchDirection: "",
       touchResponse: "Waiting",
       opacity: 0,
 
@@ -57,16 +57,26 @@ export default class Main extends Component {
   }
 
   handleMove(startLocation, currentLocation) {
-    const opacity = 0.01 * Math.abs(currentLocation.x - startLocation.x);
+    const opacity = 0.007 * Math.abs(currentLocation.x - startLocation.x);
+    let direction;
+
+    if(currentLocation.x - startLocation.x > 0) {
+      direction = "right";
+    } else if(currentLocation.x - startLocation.x < 0) {
+      direction = "left";
+    } else {
+      direction = "neutral";
+    }
     
     this.setState({
-      opacity
+      opacity,
+      direction,
     });
   }
 
 
   render() {
-    const { directionDisplay, touchStart, opacity } = this.state;
+    const { directionDisplay, touchStart, opacity, direction } = this.state;
 
     return (
       <View
@@ -74,9 +84,11 @@ export default class Main extends Component {
         {/* ---------- Swipe UI ----------- */}
         <View
           style={styles.swipeArea}>
+
           <View
           style={[styles.overlay, { opacity }]}>
           </View>
+
           <SideSwiper
             diameter={50}
             onLeftSwipe={this.handleLeftSwipe}
@@ -84,23 +96,49 @@ export default class Main extends Component {
             onCancel={this.handleCancel}
             onSwipe={this.handleMove}/>
           {/* ------------ Static Content ------------ */}
-          <Text 
-            style={styles.leftInstruction}>
-            Swipe left and start speaking!
-          </Text>
-          <View style={testStyles.touchIndicator}>
-            <Text style={testStyles.touchResponse}>
-              {this.state.touchResponse}
+          <View
+            style={styles.default}>
+            <Text 
+              style={styles.leftInstruction}>
+              Swipe left and start speaking!
+            </Text>
+            <View style={testStyles.touchIndicator}>
+              <Text style={testStyles.touchResponse}>
+                {this.state.touchResponse}
+              </Text>
+            </View>
+            <Text
+              style={styles.rightInstruction}>
+              Swipe right and start typing!
             </Text>
           </View>
-          <Text
-            style={styles.rightInstruction}>
-            Swipe right and start typing!
-          </Text>
+          {/* ------------ END Static Content ----------- */}
+          {/* ------------ Overlays ----------- */}
+          <View 
+            style={[
+              overlays.microphone, 
+              { opacity: direction === "left" ? opacity : 0}
+              ]}>
+            <Text>
+              Microphone
+            </Text>
+          </View>
+          <View 
+            style={[
+              overlays.textedit, 
+              { opacity: direction === "right" ? opacity : 0}
+              ]}>
+            <Text>
+              Text Icon
+            </Text>
+          </View>
+          {/* ------------ END Overlays ----------- */}
         </View>
+        {/* ------------ END Swipe UI ----------- */}
+
         {/* ------------ Navigator ----------- */}
         <Nav/>
-
+        {/* ---------- END Navigator --------- */}
       </View>
     );
   }
@@ -113,17 +151,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
     padding: 0,
-    borderWidth: 1,
-    borderColor: "black",
+    // borderWidth: 1,
+    // borderColor: "black",
     height: "100%",
   },
   swipeArea: {
     // flex: 1,
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
     width: "100%",
     height: "90%",
+  },
+  default: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: 'center',
+    borderColor: "black",
+    borderWidth: 1,
+    backgroundColor: "transparent",
   },
   overlay: {
     position: "absolute",
@@ -132,12 +180,30 @@ const styles = StyleSheet.create({
     height: "90%",
   },
   leftInstruction: {
-    paddingRight: "20%",
   },
   rightInstruction: {
-    paddingLeft: "20%",
   },
 });
+
+const overlays= StyleSheet.create({
+  textedit: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "blue",
+    height: "100%",
+    width: "100%",
+  },
+  microphone: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "red",
+    height: "100%",
+    width: "100%",
+  },
+});
+
 
 const testStyles = StyleSheet.create({  
   touchIndicator: {
