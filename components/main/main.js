@@ -22,6 +22,7 @@ export default class Main extends Component {
       top: -100,
       touchDirection: [],
       touchResponse: "Waiting",
+      opacity: 0,
 
       directionDisplay: "none",
     };
@@ -29,42 +30,60 @@ export default class Main extends Component {
     this.handleLeftSwipe = this.handleLeftSwipe.bind(this);
     this.handleRightSwipe = this.handleRightSwipe.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleMove = this.handleMove.bind(this);
   }
 
 
   
   handleLeftSwipe() {
     this.setState({
+      opacity: 0,
       touchResponse: "Swiped left!"
     });
   }
   
   handleRightSwipe() {
     this.setState({
+      opacity: 0,
       touchResponse: "Swiped right!"
     });
   }
 
   handleCancel() {
     this.setState({
+      opacity: 0,
       touchResponse: "Cancelled!"
+    });
+  }
+
+  handleMove(startLocation, currentLocation) {
+    const opacity = 0.01 * Math.abs(currentLocation.x - startLocation.x);
+    
+    this.setState({
+      opacity
     });
   }
 
 
   render() {
-    const { directionDisplay, touchStart } = this.state;
+    const { directionDisplay, touchStart, opacity } = this.state;
 
     return (
       <View
         style={styles.container}>
+        {/* ---------- Swipe UI ----------- */}
         <View
           style={styles.swipeArea}>
+          <View
+          style={[styles.overlay, { opacity }]}>
+          </View>
           <SideSwiper
             diameter={50}
             onLeftSwipe={this.handleLeftSwipe}
             onRightSwipe={this.handleRightSwipe}
-            onCancel={this.handleCancel}/>
+            onCancel={this.handleCancel}
+            onSwipe={this.handleMove}/>
+          {/* ------------ Static Content ------------ */}
           <Text 
             style={styles.leftInstruction}>
             Swipe left and start speaking!
@@ -78,9 +97,10 @@ export default class Main extends Component {
             style={styles.rightInstruction}>
             Swipe right and start typing!
           </Text>
-
         </View>
+        {/* ------------ Navigator ----------- */}
         <Nav/>
+
       </View>
     );
   }
@@ -102,6 +122,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    width: "100%",
+    height: "90%",
+  },
+  overlay: {
+    position: "absolute",
+    backgroundColor: '#000000',
     width: "100%",
     height: "90%",
   },

@@ -1,3 +1,15 @@
+// Component indicates swipe gesture has been initiated and in which direction
+// Properties:
+//    diameter: determines cancel area and size of indicator
+//    actions: will be executed at different stages of gesture
+//      1) onStart -> when swipe is initiated
+//      2) onSwipe -> when swipe is in motion
+//      3) onLeftSwipe -> when swipe ends in left direction
+//      4) onRightSwipe -> when swipe ends in right direction
+//      5) onCancel -> when swipe is cancelled by going back to start of gesture
+
+
+
 import React, { Component } from 'react';
 import {
   StyleSheet,
@@ -20,6 +32,8 @@ export default class SideSwiper extends Component {
       onLeftSwipe: props.onLeftSwipe,
       onRightSwipe: props.onRightSwipe,
       onCancel: props.onCancel,
+      onSwipe: props.onSwipe,
+      // onStart: props.onStart
     };
 
     this.detectStart = this.detectStart.bind(this);
@@ -62,6 +76,8 @@ export default class SideSwiper extends Component {
     const x = nativeEvent.pageX;
     const y = nativeEvent.pageY;
 
+    // this.state.onStart();
+
     const location = { 
       x,
       y,
@@ -78,6 +94,9 @@ export default class SideSwiper extends Component {
   handleSwipeMove({ nativeEvent }) {
     const x = nativeEvent.pageX;
     const y = nativeEvent.pageY;
+
+    this.state.onSwipe(this.state.touchStart, { x, y });
+
     this.setState({
       x,
       y
@@ -92,20 +111,14 @@ export default class SideSwiper extends Component {
 
     if(x < touchStart.x - 25) {
       onLeftSwipe();
-      // this.openVoiceRecorder();
     } else if (x > touchStart.x + 25) {
       onRightSwipe();
-      touchResponse = "Swiped right!";
-      // this.openTextEditor();
     } else {
       onCancel();
-      touchResponse = "Cancelled!";
     }
 
     this.setState({
       directionDisplay: "none",
-      x,
-      y,
     });
   } 
 }
