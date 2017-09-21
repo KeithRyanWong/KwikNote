@@ -27,6 +27,10 @@ export default class Main extends Component {
       directionDisplay: "none",
     };
 
+    //navigation routes
+    this.navigateToIndex = props.navigateToIndex;
+
+    //gesture handling
     this.handleLeftSwipe = this.handleLeftSwipe.bind(this);
     this.handleRightSwipe = this.handleRightSwipe.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -43,6 +47,8 @@ export default class Main extends Component {
   }
   
   handleRightSwipe() {
+    
+
     this.setState({
       opacity: 0,
       touchResponse: "Swiped right!"
@@ -137,7 +143,8 @@ export default class Main extends Component {
         {/* ------------ END Swipe UI ----------- */}
 
         {/* ------------ Navigator ----------- */}
-        <Nav/>
+        <Nav
+          navigateToIndex={this.navigateToIndex}/>
         {/* ---------- END Navigator --------- */}
       </View>
     );

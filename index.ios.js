@@ -6,12 +6,12 @@ import {
   View
 } from 'react-native';
 
-import Main from "./components/main/main";
+import Navigation from "./components/navigation";
 
 export default class QuickNote extends Component {
   render() {
     return (
-      <Main/>
+      <Navigation/>
     );
   }
 }
