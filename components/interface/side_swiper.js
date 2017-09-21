@@ -2,8 +2,8 @@
 // Properties:
 //    diameter: determines cancel area and size of indicator
 //    actions: will be executed at different stages of gesture
-//      1) onStart -> when swipe is initiated
-//      2) onSwipe -> when swipe is in motion
+//      1) onStart -> when swipe is initiated, passes in location of gesture
+//      2) onSwipe -> when swipe is in motion, passes in start and current position of touch
 //      3) onLeftSwipe -> when swipe ends in left direction
 //      4) onRightSwipe -> when swipe ends in right direction
 //      5) onCancel -> when swipe is cancelled by going back to start of gesture
@@ -23,17 +23,20 @@ export default class SideSwiper extends Component {
   constructor(props) {
     super(props);
 
+    let defaultAction = () => {};
+
     this.state = {
       touchStart: {},
       directionDisplay: "none",
       x: -100,
       y: -100,
+      hideTouch: props.hide || false, 
       diameter: props.diameter || 25,
-      onLeftSwipe: props.onLeftSwipe,
-      onRightSwipe: props.onRightSwipe,
-      onCancel: props.onCancel,
-      onSwipe: props.onSwipe,
-      // onStart: props.onStart
+      onLeftSwipe: props.onLeftSwipe || defaultAction,
+      onRightSwipe: props.onRightSwipe || defaultAction,
+      onCancel: props.onCancel || defaultAction,
+      onSwipe: props.onSwipe || defaultAction,
+      onStart: props.onStart || defaultAction,
     };
 
     this.detectStart = this.detectStart.bind(this);
@@ -75,17 +78,18 @@ export default class SideSwiper extends Component {
   detectStart({ nativeEvent }) {
     const x = nativeEvent.pageX;
     const y = nativeEvent.pageY;
-
-    // this.state.onStart();
-
     const location = { 
       x,
       y,
     };
+    const directionDisplay = this.state.hideTouch ? "none" : "flex";
+
+    this.state.onStart(location);
+    
 
     this.setState({
       touchStart: location,
-      directionDisplay: "flex",
+      directionDisplay,
       x,
       y,
     });

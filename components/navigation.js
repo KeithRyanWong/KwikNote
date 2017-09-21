@@ -20,6 +20,7 @@ export default class Navigation extends Component {
 
     this.renderView = this.renderView.bind(this);
     this.navigateToIndex = this.navigateToIndex.bind(this);
+    this.navigateToNewNote = this.navigateToNewNote.bind(this);
   }
 
   navigateToIndex(orderBy) {
@@ -28,13 +29,25 @@ export default class Navigation extends Component {
     });
   }
 
+  navigateToNewNote(mode) {
+    this.setState({
+      currentView: "newNote"
+    });
+  }
+
   renderView() {
     switch(this.state.currentView) {
       case "main":
         return <Main
-                  navigateToIndex={this.navigateToIndex}/>;
+                  navigateToIndex={this.navigateToIndex}
+                  navigateToNewNote={this.navigateToNewNote}/>;
       case "index":
-        return <Index/>;
+        return <Index
+                  navigateToNewNote={this.navigateToNewNote}/>;
+      case "newNote":
+        return <Main
+                  navigateToIndex={this.navigateToIndex}
+                  navigateToNewNote={this.navigateToNewNote}/>;
       default:
         return <Text>Error</Text>;
     }
