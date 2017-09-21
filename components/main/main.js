@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 import Nav from "./nav";
+import SideSwiper from '../interface/side_swiper';
 
 export default class Main extends Component {
   constructor(props) {
@@ -25,74 +26,31 @@ export default class Main extends Component {
       directionDisplay: "none",
     };
 
-    this.detectStart = this.detectStart.bind(this);
-    this.handleTouchError = this.handleTouchError.bind(this);
-    this.handleSwipeMove = this.handleSwipeMove.bind(this);
-    this.handleSwipeFinish = this.handleSwipeFinish.bind(this);
+    this.handleLeftSwipe = this.handleLeftSwipe.bind(this);
+    this.handleRightSwipe = this.handleRightSwipe.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
-  detectStart({ nativeEvent }) {
-    this.showStart();
 
-    const x = nativeEvent.pageX;
-    const y = nativeEvent.pageY;
-
-    const location = { 
-      x,
-      y,
-    };
-
+  
+  handleLeftSwipe() {
     this.setState({
-      touchResponse: `Touch started at ${location.x}, ${location.y}`,
-      touchStart: location,
-      directionDisplay: "flex",
-      x,
-      y,
+      touchResponse: "Swiped left!"
     });
   }
   
-  showStart() {
-
-  }
-
-  handleTouchError(evt) {
+  handleRightSwipe() {
     this.setState({
-      touchResponse: "Something went wrong"
+      touchResponse: "Swiped right!"
     });
   }
 
-  handleSwipeMove({ nativeEvent }) {
-    const x = nativeEvent.pageX;
-    const y = nativeEvent.pageY;
+  handleCancel() {
     this.setState({
-      x,
-      y
+      touchResponse: "Cancelled!"
     });
   }
 
-  handleSwipeFinish({ nativeEvent }) {
-    const x = nativeEvent.pageX;
-    const y = nativeEvent.pageY;
-    let touchResponse;
-    let { touchStart } = this.state;
-
-    if(x < touchStart.x - 25) {
-      touchResponse = "Swiped left!";
-      // this.openVoiceRecorder();
-    } else if (x > touchStart.x + 25) {
-      touchResponse = "Swiped right!";
-      // this.openTextEditor();
-    } else {
-      touchResponse = "Cancelled!";
-    }
-
-    this.setState({
-      directionDisplay: "none",
-      x,
-      y,
-      touchResponse,
-    });
-  } 
 
   render() {
     const { directionDisplay, touchStart } = this.state;
@@ -100,15 +58,13 @@ export default class Main extends Component {
     return (
       <View
         style={styles.container}>
-        <View 
-          style={styles.swipeArea}
-          onStartShouldSetResponder={evt => true}
-          onMoveShouldSetResponder={evt => true}
-          onResponderGrant={this.detectStart}
-          onResponderReject={this.handleTouchError}
-          onResponderMove={this.handleSwipeMove}
-          onResponderRelease={this.handleSwipeFinish}>
-
+        <View
+          style={styles.swipeArea}>
+          <SideSwiper
+            diameter={50}
+            onLeftSwipe={this.handleLeftSwipe}
+            onRightSwipe={this.handleRightSwipe}
+            onCancel={this.handleCancel}/>
           <Text 
             style={styles.leftInstruction}>
             Swipe left and start speaking!
@@ -123,21 +79,6 @@ export default class Main extends Component {
             Swipe right and start typing!
           </Text>
 
-
-          {/* --------Direction indicator---------- */}
-          <View 
-            style={{
-              position: "absolute",
-              display: directionDisplay,
-              width: 50,
-              height: 50,
-              left: touchStart.x - 25,
-              top: touchStart.y - 25,
-              borderRadius: 50,
-              borderWidth: 1,
-              borderColor: "black",
-            }}>
-          </View>
         </View>
         <Nav/>
       </View>
